@@ -119,6 +119,50 @@ resources- image3.png
 - “Prompt engineering is not just about telling a model what to do. It’s also about giving the model the necessary context and tools to do a given task. For complex tasks with long context, you might also need to provide the model with a memory management system so that the model can keep track of its history”
 - “Traditionally, ML engineering is Python-centric. Before foundation models, the most popular ML frameworks supported mostly Python APIs. Today, Python is still popular, but there is also increasing support for JavaScript APIs, with LangChain.js, Transformers.js, OpenAI’s Node library, and Vercel’s AI SDK.”
 
+# Foundational Models
+
+# Sampling
+- “Sampling is how a model chooses an output from all possible options. It is perhaps one of the most underrated concepts in AI. ”
+- “common source for training data is Common Crawl
+-  Google provides a clean subset of Common Crawl called the Colossal Clean Crawled Corpus, or C4 for short.”
+-  “Some teams use heuristics to filter out low-quality data from the internet. For example, OpenAI used only the Reddit links that received at least three upvotes to train GPT-2.”
+-  “perform well on tasks present in the training data but not necessarily on the tasks you care about. To address this issue, it’s crucial to curate datasets that align with your specific needs”
+-  a model trained with a smaller amount of high-quality data might outperform a model trained with a large amount of low-quality data.”
+-  “A model’s inference latency and cost is proportional to the number of tokens in the input and response”
+-  “languages like Burmese and Hindi require a lot more tokens than English or Spanish. For the MASSIVE dataset, the median token length in English is 7, but the median length in Hindi is 32, and in Burmese, it’s a whopping 72, which is ten times longer than in English.”
+-  “Assuming that the time it takes to generate a token is the same in all languages, GPT-4 takes approximately ten times longer in Burmese than in English for the same content. For APIs that charge by token usage, Burmese costs ten times more than English.”
+-  They can perform better in general purpose tasks but not on domain specific tasks. “This data is unlikely to be found in publicly available internet data.”“Drug discovery involves protein, DNA, and RNA data, which follow specific formats and are expensive to acquire”
+-  “Domain-specific models are especially common for biomedicine, but other fields can benefit from domain-specific models too”
+-  
+
+# Modelling
+- before training, devs needs to decide what model should look like? , “What architecture should it follow? How many parameters should it have? ”
+
+# Transformer Architecture
+- “based on the attention mechanism.”
+- “seq2seq (sequence-to-sequence) architecture was it's precursor, this is also used in the google translation
+  - “At a high level, seq2seq contains an encoder that processes inputs and a decoder that generates outputs. Both inputs and outputs are sequences of tokens, hence the name. Seq2seq uses RNNs (recurrent neural networks) as its encoder and decoder.”
+  -  “In its most basic form, the encoder processes the input tokens sequentially, outputting the final hidden state that represents the input. The decoder then generates output tokens sequentially, conditioned on both the final hidden state of the input and the previously generated token. ”
+  -  ex- image6.png
+  -  limitations
+     -  slow as need to sequentially process token wise let's say if we had 200 tokens
+     -  generates output based only on the final hidden state of the input which is like  “answers about a book using the book summary. “his limits the quality of the generated outputs.”
+-  “transformer architecture addresses both problems with the attention mechanism. The attention mechanism all ows the model to weigh” “the importance of different input tokens when generating each output token. This is like generating answers by referencing any page in the book.”
+-  rocess all words in parallel. Use self-attention to find relationships between all words. Faster, more scalable, captures long-range dependencies easily.
+-  Transformers don’t use Recurrent Neural Networks (RNNs) at all.They replaced recurrence with self-attention.
+-  RNNs (Old Method):
+   -  Process input sequentially (one word at a time).Use hidden states to remember previous words. Slow to train, hard with long sequences.
+-  “Inference for transformer-based language models, therefore, consists of two steps:”
+     1. Prefill: “processes the input tokens in parallel. This step creates the intermediate state necessary to generate the first output token. This intermediate state includes the key and value vectors for all input tokens.”
+     2. Decode- “model generates one output token at a time.” , “the parallelizable nature of prefilling and the sequential aspect of decoding both motivate many optimization techniques to make language model inference cheaper and faster.
+
+# Attention mechanism
+
+
+
+
+
+
 
 
 

@@ -14,6 +14,10 @@ training large language models (LLMs) requires data, compute resources, and spec
 
 “The basic unit of a language model is token. A token can be a character, a word, or a part of a word (like -tion), depending on the model.2 For example, GPT-4, a model behind ChatGPT, breaks the phrase “I can’t wait to build AI applications” into nine tokens,”. “process of breaking the original text into tokens is called tokenization.”“The set of all tokens a model can work with is the model’s vocabulary. ”. “The tokenization method and vocabulary size are decided by model developers.
 
+- Ex “How are you?”
+→ ["How", "are", "you", "?"]
+- Each token is given a unique ID: , this above sentence → [105, 210, 330, 12]
+
 # why tokens and not char or words
 Why LMs use tokens (not words/chars):
     Tokens = meaningful subword units (e.g., cook + ing)
@@ -155,12 +159,84 @@ resources- image3.png
 -  “Inference for transformer-based language models, therefore, consists of two steps:”
      1. Prefill: “processes the input tokens in parallel. This step creates the intermediate state necessary to generate the first output token. This intermediate state includes the key and value vectors for all input tokens.”
      2. Decode- “model generates one output token at a time.” , “the parallelizable nature of prefilling and the sequential aspect of decoding both motivate many optimization techniques to make language model inference cheaper and faster.
+   
+# What is a transformer?
+- Transformers are models that understand or generate sequences (like text) by using attention — a mechanism that helps the model decide which parts of the input matter most right now.
+
+# Embeddings
+- Turning Tokens into Vectors
+- Example embedding matrix (vocab × dim):
+- Token	Embedding (3D example)
+         How	[0.2, -0.7, 0.5] , we have taken just 3 values but larger models like gpt have 4059 values capacity. This means how corressponds to this much values, Every value captures the meaning , different context or tone of that word. 
+         are	[-0.3, 0.1, 0.8]
+         you	[0.9, -0.4, 0.2]
+         ?	[-0.5, 0.9, 0.0]
+- in real models:, Embedding dimension (d) = 512–4096 , Each token → a point in a d-dimensional semantic space
 
 # Attention mechanism
+- “attention mechanism leverages key, value, and query vectors:” , heart of transformer architecture
+- leverages key values and vectors
+- Every token gets turned into 3 learned vectors:
+   1. Query (Q) — what this token is currently looking for (“What do I need?”)
+   2. Key (K) — how this token can describe itself (“What info do I have?”)
+   3. Value (V) — the actual content it carries (“Here’s my meaning.”)
+- Formula example -> image7.png 
+- The attention mechanism computes how much attention to give an input token by performing a dot product between the query and its key vector.
+  
+   # How key vector is created?
+   -  embedding is a raw vector  “How” embedding → X = [0.2, -0.7, 0.5] , we can't use this directly, we want to create a Key vector (K), a new version out of this raw info specialized for attention
+   - to do this we transform it via learned transformation( a matrix that the model learns during training.)
+   - If your embedding has 3 numbers (dimension = 3), then it is a 3×3 matrix (because we want to transform a 3D vector into another 3D vector).
+     - example image 8.png
+   - we take above X and multiply by this Wk, k = x * wk , this result K is used in attention mechanism
+   - This multiplication is not random, it’s the model learning how to reshape information.
+  
+   # 🎯 Purpose of creating K (and Q, V):
+   - The model needs a way to compare tokens and decide which ones are related or relevant.
+   - Raw embeddings (X) only contain static meaning (“word identity”).
+   - But attention needs contextual meaning — how this word behaves in this sentence.
+   - By multiplying with learned matrices (W_Q, W_K, W_V), the model projects embeddings into new “spaces” that make comparing and combining information possible.
+  
+   # 📊 So, the multiplication (X × W_K):
+   - Changes the coordinate system of the token’s meaning.
+   - Places each token in a space where attention comparisons make sense.
+   - Gives each token a “learned identity” for being recognized by queries.
+   - We create K, Q, and V vectors so that the model can represent and compare tokens in a meaningful way.
+  
+- The Key, Query, and Value transformations let the model move from static meaning (embeddings) to relational meaning — allowing it to measure “who should pay attention to whom.
+   
+    # Attention weight/Scores
+    - same formula  image7.png
+    - Once every token has its Q and K vectors:
+        - Q (Query): what the current token is looking for
+        - K (Key): what each previous token offers
+    - The model compares every Query with every Key using a dot product → this gives a similarity score
+    - Q * K = Measures how related they are , Larger value = higher similarity
+    - Softmax — Turning scores into probabilities:
+    - example -> image9.png
+    # 🧠 Why this helps the model:
+    - This process lets each word look at all other words and decide what’s important.
+    - Attention is dynamic — it changes per word, per layer.
+    - This is how transformers “understand context” — not by remembering order, but by comparing meanings.
+    # 💬 Example in words:
+    - For the sentence “How are you?”
+          - When the model predicts “?”,
+          - Its Q compares to K of “How”, “are”, “you”
+          - Finds “you” most relevant (highest dot product)
+          - Pulls info from V(“you”)
+          - Generates “?” correctly.
 
-
-
-
+    # Multi-head attention
+    - Allow the model to look at the same sentence from multiple perspectives at once.
+    - In single head we compute Q, K, V for all tokens , Do softmax , get one context vector per token, but single view might only capture one kind of relationship.
+    - So we split the embedding into several smaller parts and perform attention in parallel
+    # Example
+    - If your embedding dimension = 4096 and you have 32 heads: 4096/32 = 128
+    # what happens inside each head?
+    - example image 10.png
+    - example image 11.png
+    - Each head learns to focus on different relationships (syntax, grammar, long-range links).
+    - Combining all individual head resultls gives the model multi-dimensional contextual understanding.
 
 
 

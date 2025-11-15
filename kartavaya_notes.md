@@ -63,7 +63,7 @@ Historically AI research was for NLP(Natural Lang Processing) which only deals w
 
 Multimodels-> “model that can work with more than one data modality is also called a multimodal model. A generative multimodal model is also called a large multimodal model (LMM). If a language model generates the next token conditioned on text-only tokens, a multimodal model generates the next token conditioned on both text and image tokens, or whichever modalities that the model supports”
 
-example image2.png
+example image2.**png**
 
 Multimodal models also need lots of data.
 
@@ -473,7 +473,40 @@ For the sentence “How are you?”
 - Pulls info from V(“you”)
 - Generates “?” correctly.
 
+# Why compute is hard and why is it so hard to extend context “length for transformer models”
+
+Every token → 1 Query, 1 Key, 1 Value vector
+
+To compute attention for token t, we do: Qₜ compared with all previous Keys K₁..Kₜ
+
+Gives t scores
+
+Softmax → t attention weights
+
+Weighted sum of V₁..Vₜ → outputₜ
+
+So:
+
+Token 1 → 1 comparison
+
+Token 2 → 2 comparisons
+
+Token L → L comparisons
+
+Total comparisons =
+
+1 + 2 + ... + L = O(L²)
+
+
+Must store all Ks and Vs = O(L) memory
+
+Must compute Q·K for all pairs = O(L²) compute
+
+That’s why increasing context window is expensive.
+
 # Multi-head attention
+
+“The attention mechanism is almost always multi-headed. ”
 
 Allow the model to look at the same sentence from multiple perspectives at once.
 
@@ -483,7 +516,28 @@ So we split the embedding into several smaller parts and perform attention in pa
 
 Example
 
+For each token embedding (size = d_model), instead of creating ONE Q vector, we create many:
+
+Q₁, Q₂, … Qₙ → one per head
+
+K₁, K₂, … Kₙ
+
+V₁, V₂, … Vₙ
+
+Where n = number of heads.
+
+For each head i:
+
+Compare Qᵢ with all previous Kᵢ
+
+Softmax the scores
+
+Build weighted sum of Vᵢ
+
+This gives one output vector per head (128 dims).
+
 If your embedding dimension = 4096 and you have 32 heads: 4096/32 = 128
+
 
 what happens inside each head?
 
@@ -494,3 +548,36 @@ example image 11.png
 Each head learns to focus on different relationships (syntax, grammar, long-range links).
 
 Combining all individual head resultls gives the model multi-dimensional contextual understanding.
+
+We concatenate all head outputs
+
+After concatenation → we multiply by W_O (“output projection”).
+
+Why?
+
+Because:
+
+each head learned a different view
+
+W_O learns how to combine all views into one meaningful representation
+
+Shape of W_O:
+
+each head becomes a pattern detector focusing on different relationships.
+
+example
+Head 1: noun modifies adjective
+
+Head 6: who (“he/she”) refers to
+
+Head 10: long-range dependencies
+
+Head 18: parentheses/brackets matching
+
+Head 22: sentence boundaries
+
+Head 29: style/genre
+
+Head 31: number agreement (is/are)
+
+Combining them produces powerful contextual understanding.

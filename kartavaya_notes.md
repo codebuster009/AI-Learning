@@ -320,6 +320,19 @@ These are just numbers the model learns during training.
 
 new_weight = old_weight - learning_rate × gradient (Learning rate = how big your step is. Gradient = direction to change.)
 
+# What is neural network?
+A big collection of tiny math units connected together, working together to solve a task.
+
+A neural network uses artificial neurons — very simple math functions that:
+
+take numbers in
+
+do some math
+
+output a number
+
+They’re “neural” because they act a bit like brain neurons.
+
 # Transformer Architecture
 
 “based on the attention mechanism.”
@@ -327,6 +340,9 @@ new_weight = old_weight - learning_rate × gradient (Learning rate = how big you
 “seq2seq (sequence-to-sequence) architecture was it's precursor, this is also used in the google translation
 
 “At a high level, seq2seq contains an encoder that processes inputs and a decoder that generates outputs. Both inputs and outputs are sequences of tokens, hence the name. Seq2seq uses RNNs (recurrent neural networks) as its encoder and decoder.”
+
+Easy way-> Recurrent neural network sees somthing adds in notebook one by one
+Ex- Bank work might have diff meanings depending on context ex- River Bank , Loan from Bank, So whole context needs to be known
 
 “In its most basic form, the encoder processes the input tokens sequentially, outputting the final hidden state that represents the input. The decoder then generates output tokens sequentially, conditioned on both the final hidden state of the input and the previously generated token. ”
 
@@ -338,17 +354,34 @@ slow as need to sequentially process token wise let's say if we had 200 tokens
 
 generates output based only on the final hidden state of the input which is like “answers about a book using the book summary. “his limits the quality of the generated outputs.”
 
+so it's like asking detail questions but you can only answer a whole chapter using summary. Some important details will get lost.
+
 “transformer architecture addresses both problems with the attention mechanism. The attention mechanism all ows the model to weigh” “the importance of different input tokens when generating each output token. This is like generating answers by referencing any page in the book.”
 
-rocess all words in parallel. Use self-attention to find relationships between all words. Faster, more scalable, captures long-range dependencies easily.
+process all words/tokens in parallel. Use self-attention to find relationships between all words. Faster, more scalable, captures long-range dependencies easily.
 
 Transformers don’t use Recurrent Neural Networks (RNNs) at all.They replaced recurrence with self-attention.
 
-# RNNs (Old Method):
+# Self Attention
+The model is paying attention to the words in the same sentence (“self”),
 
-Process input sequentially (one word at a time).Use hidden states to remember previous words. Slow to train, hard with long sequences.
+Not to some outside information.
 
-# “Inference for transformer-based language models, therefore, consists of two steps:”
+For each word, the model:
+
+Looks at all the other words
+
+Decides how relevant they are
+
+Gives more weight (“attention”) to the important ones
+
+Combines the information to better understand the word
+
+# RNNs (Old Method): Recurrent Neural Network
+
+Process input sequentiaslly (one word at a time).Use hidden states to remember previous words. Slow to train, hard with long sequences.
+
+# “Inference(conclusion) for transformer-based language models, therefore, consists of two steps:”
 
 1. Prefill: “processes the input tokens in parallel. This step creates the intermediate state necessary to generate the first output token. This intermediate state includes the key and value vectors for all input tokens.”
 
@@ -386,7 +419,7 @@ If your embedding has 3 numbers (dimension = 3), then it is a 3×3 matrix (becau
 
 example image 8.png
 
-we take above X and multiply by this Wk, k = x * wk , this result K is used in attention mechanism
+we take above X and multiply by this Wk(learned matrices), k = x * wk , this result K is used in attention mechanism
 
 This multiplication is not random, it’s the model learning how to reshape information.
 
@@ -416,9 +449,13 @@ The Key, Query, and Value transformations let the model move from static meaning
 
 Once we have Q (query) and K (key) vectors, the Transformer must decide How much should token A pay attention to token B
 # It does this in 3 steps:
+
 1. Compute raw attention scores
 For each pair of tokens: score = Q • K   (dot product) 
+“performing a dot product between the query vector and its key vector. A high score means that the model will use more of that page’s content (its value vector) when generating the book’s summary. ”
+
 Q and K are created by multiplying the token embedding X with learned weight matrices refer [# WHAT IS and Why DO WE NEED POSITIONAL ENCODING?]
+
 # What is a dot product?
 If
 Q = [1, 2, 3]
@@ -455,6 +492,7 @@ Pay almost 0% to “the”
 same formula image7.png
 example -> image9.png
 example-> image12.png
+example-image16.png
 
 # 🧠 Why this helps the model:
 
@@ -581,3 +619,84 @@ Head 29: style/genre
 Head 31: number agreement (is/are)
 
 Combining them produces powerful contextual understanding.
+
+# Output Projection ( W__0)
+Multi-head attention = 32 small attention modules, each doing its own job.
+
+Concatenation = put their results side-by-side (no mixing).
+
+Output projection = learned mixing of all heads back into 4096-D space.
+
+In linear algebra terms:
+
+W_O computes a learned linear combination of all head outputs.
+
+# Linear Vs Non-Linear ( basics)
+We say something to be linear if it follows two simple rules always:
+1. Additivity
+      - f(a + b) = f(a) + f(b)
+2. Scaling
+      - f(c·a) = c·f(a)
+      - If you stretch a vector by a number c and then apply f, it must be the same as applying f first, then stretching the result
+# Why these rules matter?
+Because if BOTH rules are true, then:
+👉 f cannot bend space
+👉 f cannot curve anything
+👉 f cannot twist one part more than another
+
+It can only: stretch , shrink , rotate , flip , shear (slant) , Everything stays straight and proportional.
+
+
+# A transformer can contain multiple transformer blocks, but, in general, each transformer contains:
+1. Attention Module
+“consists of four weight matrices: query, key, value, and output projection.”
+
+2. MLP(multi layer perceptron) also k/a (Feedforward / Linear Layers)
+part helps the model learn complex patterns after attention has combined information.
+
+Consists of: 
+
+Linear layer 1 → FF1
+Activation function (ReLU, GELU, etc.) --> These add non-linearity (allowing the model to learn complex ideas).
+Linear layer 2 → FF2
+
+# Modules Before and After Transformer Blocks1
+1. Embedding Module (before blocks)
+
+Turns: tokens → embedding vectors , positions → positional embeddings
+
+If a model stores positions 0–2047, its maximum context length is 2048 tokens (unless special tricks are used).
+
+# Embedding module contains: 
+Embedding matrix
+Positional embedding matrix
+Output Layer (after blocks)
+
+Turns final hidden vectors into probabilities for each token in the vocabulary.
+
+Uses one matrix (unembedding matrix).
+
+Sometimes called the model head.
+
+# How model size is determined?
+
+1. Model dimension (d_model)
+
+Determines size of Q, K, V, O matrices
+
+Larger d_model = bigger model = more parameters
+
+2. Number of transformer blocks
+
+More blocks = deeper model = more parameters
+
+3. Feedforward dimension (d_ff)
+
+Size of hidden layer inside the MLP
+
+Often much larger than d_model
+
+4. Vocabulary size (V)
+
+Larger vocab = bigger embedding & output matrices
+

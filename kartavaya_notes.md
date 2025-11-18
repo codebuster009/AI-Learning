@@ -391,6 +391,34 @@ Process input sequentiaslly (one word at a time).Use hidden states to remember p
 
 Transformers are models that understand or generate sequences (like text) by using attention — a mechanism that helps the model decide which parts of the input matter most right now.
 
+# What are dimensions in a model?
+we say larger dimensions, we are talking about things like:
+hidden size (embedding dimension)
+number of heads
+size of each head
+feedforward dimension
+number of layers
+These define how big the model is inside.
+If you increase: embedding dimension → model gets more parameters number of layers → model gets more parameters feedforward dimension → more parameters
+heads → more parameters
+These are like adding: more neurons, more connections, more weights
+👉 More dimensions = more weights = more parameters = larger model
+
+# WHAT IS CONTEXT LENGTH?
+Context length = how many tokens the model can read at once.
+Newer models have 8,192… 32,000… 100,000… even 1,000,000
+But WHY doesn’t this increase parameters?
+Because context length does not add any new weights to the model.
+Instead, it changes how much memory the model uses during a single inference, not the model's actual size.
+
+# Why context length does NOT add parameters
+Because the same attention block weights are reused for each position in the sequence.
+Self-attention does this:
+For each token, compute Q, K, V using the SAME learned matrices
+So whether you have: 100 tokens 1000 tokens 10,000 tokens 1,000,000 tokens
+The number of matrices (parameters) stays the same.
+The model just has to do more computation for more tokens.
+
 # Attention mechanism
 
 “attention mechanism leverages key, value, and query vectors:” , heart of transformer architecture
@@ -644,6 +672,15 @@ Because if BOTH rules are true, then:
 👉 f cannot curve anything
 👉 f cannot twist one part more than another
 
+# What are non-linear functions?
+When a neural network processes information, each layer takes numbers in, does some math, and sends new numbers out.
+
+If it only did normal math (like adding and multiplying), the network would be limited—it could only learn straight-line patterns.
+
+Nonlinear functions are special little operations that “bend” the data so the network can learn complicated things—like images, language, or speech.
+
+Think of them as shapes the network uses to understand the world.
+
 It can only: stretch , shrink , rotate , flip , shear (slant) , Everything stays straight and proportional.
 
 
@@ -699,4 +736,120 @@ Often much larger than d_model
 4. Vocabulary size (V)
 
 Larger vocab = bigger embedding & output matrices
+
+
+# AI Carbon emissions
+https://youtu.be/MJQIQJYxey4?si=bLWX0zODr6flRRTQ
+
+# ReLU/Rectified Linear Unit.?
+one of the simplest and most popular nonlinear functions.
+Here is its entire job:
+👉 If a number is negative → turn it into 0
+👉 If a number is positive → keep it the same
+Mathematically: ReLU(x) = max(0, x)
+
+# Where do negative values come from?
+Every neuron in a neural network does this simple math:
+output = (weight * input) + bias
+Bias is just a number the neuron adds after multiplying.
+
+# Before tranining starts
+Every neuron has:
+a weight → random
+a bias → random
+
+Example:weight = 0.17 , bias = -0.93
+
+During training, the model makes a prediction. The model thinks the answer should be 2.5 but the correct answer is 5. So the model has error.
+The model calculates:
+“How should I change the weight and the bias
+so next time, my prediction is closer to the truth?” Just a small change. It does this millions of times during training. Eventually, the bias becomes a number that helps the neuron make correct predictions.
+
+# Why does a neuron even NEED a bias?
+Let’s say:
+
+output = weight * input
+
+This ALWAYS passes through (0,0).
+
+But some patterns in data need lines that start higher or lower.
+
+Examples:
+
+If input = 0 but the correct answer is 7 → you NEED bias 7
+
+If input = 0 but the correct answer is -3 → you NEED bias -3
+
+Bias lets the neuron shift up or down to fit the data.
+
+It shifts the line up or down.
+Every neuron produces positives and negatives during training.
+Every neuron produces an output based on an equation.That equation is a line.
+y = 2x + 3 , y = -1.5x + 7
+WITHOUT RELU = ONLY STRAIGHT LINES
+That means:
+the model cannot learn curves
+it cannot adapt
+it cannot grow
+it cannot learn complex patterns
+ex- ____/
+
+This hinge is everything.
+You can build almost any shape using enough hinges.
+
+https://www.geeksforgeeks.org/deep-learning/relu-activation-function-in-deep-learning/
+
+When you pass this “bent line” to the next layer, the next neuron works on a shape that already has structure.
+
+# Till above we discussed the embedding module before the transformer blocks, now let's see output layer after the transformer blocks” “called the unembedding layer. ”
+“refer to the output layer as the model head, as it’s the model’s last layer before output generation.”
+example: image17.png
+
+# Some other architectures(dive deep yourself , hard to outperform transformer architechture)
+⭐ Major Deep Learning Architectures (with one-line summaries)
+🔹 CNN (Convolutional Neural Network) Great for images; extracts spatial patterns like edges and textures.
+🔹 RNN (Recurrent Neural Network) Processes sequences one step at a time; keeps short-term memory.
+🔹 LSTM (Long Short-Term Memory) Advanced RNN that handles longer dependencies using gates.
+🔹 GRU (Gated Recurrent Unit) Simpler LSTM version with similar performance on many tasks.
+🔹 Seq2Seq (Encoder–Decoder RNN)
+
+# Old machine translation setup; replaced mostly by transformers.
+🔹 GAN (Generative Adversarial Network) Two neural nets compete: one generates, one judges; great for images.
+🔹 VAE (Variational Autoencoder) Probabilistic model for generating and compressing data.
+🔹 Capsule Networks Tried to encode spatial hierarchies; never became mainstream.
+⭐ Architectures directly related to Transformers / Modern LLMs
+🔹 Transformer Uses self-attention for parallel sequence processing; current dominant architecture.
+🔹 MoE Transformer (Mixture-of-Experts) Only activates part of the model per token → huge models with small compute.
+🔹 Linear Attention Transformers Variants designed to reduce quadratic attention cost (e.g., Performer, Linformer).
+🔹 Longformer / BigBird Transformers modified for long documents via sparse attention. 
+🔹 Reformer Memory-efficient transformer using hashing. 
+🔹 FlashAttention Transformers Optimized attention computation for speed and memory.
+
+⭐ New / Transformer Alternatives (Rising Today)
+# example Image 18.png
+🔹 Mamba (State Space Model) RNN-like architecture with linear memory and long-context ability.
+🔹 S4 / S5 (Structured State Space Models) Mathematically powerful SSMs for long-range sequence modeling.
+🔹 Jamba (Hybrid Transformer + Mamba + MoE) Mixes attention + SSM + MoE for long sequences with efficiency.
+🔹 RWKV Hybrid RNN/Transformer that trains in parallel but runs sequentially.
+🔹 Samba Enhanced SSM improvement inspired by Mamba.
+⭐ Graph-based and Reasoning Architectures 
+🔹 GNN (Graph Neural Network) Operates on graph-structured data like molecules or social networks.
+🔹 GAT (Graph Attention Network) GNN with attention weights for node importance.
+⭐ Diffusion Models (for images, audio, video)
+🔹 DDPM (Denoising Diffusion Probabilistic Model) Generates images by reversing a noise-adding process.
+🔹 UNet (commonly used inside diffusion models) Encoder–decoder network with skip connections for image generation.
+🔹 Latent Diffusion (Stable Diffusion)
+
+# Diffusion in compressed latent space: faster and more efficient.
+⭐ Memory + Retrieval Architectures
+🔹 RAG (Retrieval-Augmented Generation) LLM + external knowledge search for more accurate answers.
+🔹 RETRO (DeepMind) Transformer with explicit large-scale retrieval baked in.
+🔹 KNN-LM
+ and many more ....
+
+# Model Size(Page 63)
+
+
+
+
 

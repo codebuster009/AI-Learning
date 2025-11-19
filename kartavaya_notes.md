@@ -56,6 +56,31 @@ Bigger models → need more data to perform well.
 Training large model on small data = waste of compute.
 
 Smaller model can perform as well or better on small data.
+Ex- if someone says 7b params = 7b tiny numbers 
+If each number uses 2 bytes, then:
+1 parameter = 2 bytes
+7 billion parameters = 7 billion × 2 bytes
+Which equals:
+👉 14 billion bytes And 14 billion bytes ≈ 14 gigabytes (GB) of memory.
+If a model requires 14GB, your GPU must have:
+✔ at least 14GB of VRAM
+# RAM vs VRAM (GPU memory)
+| Memory Type             | Used By | Purpose                                           |
+| ----------------------- | ------- | ------------------------------------------------- |
+| **RAM** (system memory) | CPU     | Runs programs, stores data for general use        |
+| **VRAM** (on the GPU)   | GPU     | Runs AI models, graphics, and heavy parallel math |
+
+Note: There are workarounds if you don't have GPU then the AI model can use sytem RAM and use system CPU but it's very slow 
+# Offloading
+Some tools let you split the model:
+Part in VRAM
+Part in RAM, Still slower, but better than CPU-only.
+
+# Why we need GPU to run AI models?
+A GPU (Graphics Processing Unit) is a special part of your computer originally designed to draw graphics (like video games). But today GPUs are used for AI because they are extremely good at doing many tiny calculations at the same time.
+CPU = a few super-smart workers
+GPU = thousands of simple workers working in parallel
+AI models need millions of tiny math operations at once, so GPUs are perfect for that.
 
 # Foundation Models
 
@@ -801,6 +826,8 @@ https://www.geeksforgeeks.org/deep-learning/relu-activation-function-in-deep-lea
 
 When you pass this “bent line” to the next layer, the next neuron works on a shape that already has structure.
 
+# Limitations of transformer architecture
+
 # Till above we discussed the embedding module before the transformer blocks, now let's see output layer after the transformer blocks” “called the unembedding layer. ”
 “refer to the output layer as the model head, as it’s the model’s last layer before output generation.”
 example: image17.png
@@ -847,7 +874,74 @@ example: image17.png
 🔹 KNN-LM
  and many more ....
 
+ # Sparse vs Dense
+sparse- [0, 0, 1.1, 0, 0, 0.4] , many 0 values
+Dense model:[2.4, -1.3, 0.7, 5.2, -3.0, 1.9]
+Because zeros mean:
+They don’t change anything
+They don’t need to be stored in full detail
+They don’t need to be used when calculating the model’s output
+but they can become non-zero 
+
 # Model Size(Page 63)
+Example: 7B parameters but 90% zeros
+If a model has: 7 billion total parameters 90% of them are zero
+Then only 10% matter:
+7 billion × 0.10 = 700 million non-zero parameters
+So even though it sounds like a huge model (“7B!”),
+in reality it only has 700M active parameters worth computing.
+Carrying a backpack
+Dense model = backpack with 7 billion heavy objects
+Sparse model = backpack with 7 billion objects, but 90% weigh zero
+If most items weigh zero, your backpack is much lighter.
+So it’s easier to carry (less compute).
+
+# 3 numbers signal a model’s scale:
+Number of parameters, which is a proxy for the model’s learning capacity.
+Number of tokens a model was trained on, which is a proxy for how much a model learned.
+Number of FLOPs, which is a proxy for the training cost.”
+
+Excerpt From
+AI Engineering
+Chip Huyen
+This material may be protected by copyright.
+
+# Mixture of Experts a new type of sparse model
+“An MoE model is divided into different groups of parameters, and each group is an expert. Only a subset of the experts is active for (used to) process each token.”
+“ example, Mixtral 8x7B is a mixture of eight experts, each expert with seven billion parameters. If no two experts share any parameter, it should have 8 × 7 billion = 56 billion parameters. However, due to some parameters being shared, it has only 46.7 billion parameters.”
+
+# Importance of size of data it was trained on
+“ for model dataset sizes are measured by the number of training samples. ”
+“The number of tokens isn’t a perfect measurement either, as different models can have different tokenization processes,”
+“LLMs are trained using datasets in the order of trillions of tokens”
+“The number of tokens in a model’s dataset isn’t the same as its number of training tokens. The number of training tokens measures the tokens that the model is trained on”
+
+# 3 golden rules of data training
+Quantity
+Quality
+Diversity
+
+# Computation cost and requirements
+“A more standardized unit for a model’s compute requirement is FLOP, or floating point operation. FLOP measures the number of floating point operations performed for a certain task.”
+“The plural form of FLOP, FLOPs, is often confused with FLOP/s, floating point operations per Second. FLOPs measure the compute requirement for a “task, whereas FLOP/s measures a machine’s peak performance.”
+
+Example - “example, an NVIDIA H100 NVL GPU can deliver a maximum of 60 TeraFLOP/s: 6 × 1013 FLOPs a second or 5.2 × 1018 FLOPs a day.16”
+“1 FLOP/s-day = 60 × 60 × 24 = 86,400 FLOPs”
+“Assume that you have 256 H100s. If you can use them at their maximum capacity and make no training mistakes, it’d take you (3.14 × 1023) / (256 × 5.2 × 1018) = ~236 days, or approximately 7.8 months, to train GPT-3-175B. , “Generally, if you can get half the advertised performance, 50% utilization, you’re doing okay.
+not possible to utilize something 100 percent
+“At 70% utilization and $2/h for one H100,17 training GPT-3-175B would cost over $4 million:
+
+$2/H100/hour × 256 H100 × 24 hours × 256 days / 0.7 = $4,142,811.43
+
+
+
+
+
+
+
+
+
+
 
 
 

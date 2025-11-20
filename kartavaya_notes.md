@@ -901,10 +901,10 @@ Number of parameters, which is a proxy for the model’s learning capacity.
 Number of tokens a model was trained on, which is a proxy for how much a model learned.
 Number of FLOPs, which is a proxy for the training cost.”
 
-Excerpt From
-AI Engineering
-Chip Huyen
-This material may be protected by copyright.
+# FLOP
+FLOP = one math operation with decimal numbers
+FLOPS = how many of those a computer can do per second
+More FLOPS = better performance for scientific, graphics, and AI tasks
 
 # Mixture of Experts a new type of sparse model
 “An MoE model is divided into different groups of parameters, and each group is an expert. Only a subset of the experts is active for (used to) process each token.”
@@ -932,6 +932,102 @@ not possible to utilize something 100 percent
 “At 70% utilization and $2/h for one H100,17 training GPT-3-175B would cost over $4 million:
 
 $2/H100/hour × 256 H100 × 24 hours × 256 days / 0.7 = $4,142,811.43
+
+# compute-optional.
+“A model that can achieve the best performance given a fixed compute budget is compute-optional.
+
+# Chinchilla scaling law
+refer- “Chinchilla paper “Training Compute-Optimal Large Language Models”
+https://www.youtube.com/watch?v=PZXN7jm9IC0
+
+summmary- Too big model + too little data = bad.
+Too small model + too much data = also bad.
+If you know FLOPs, then:
+1 → Choose optimal Parameters
+2 → Compute how many Tokens you need
+3 → Train
+
+This avoids wasting compute.
+
+example- image19.png
+
+# “Beyond Neural Scaling Laws: Beating Power Law Scaling via Data Pruning” - Meta research paper
+“a model with a 2% error rate might require an order of magnitude more data, compute, or energy than a model with a 3% error rate.”
+“improving a model’s accuracy from 90 to 95% is more expensive than improving it from 85 to 90%.”
+
+# Cross-Entropy loss
+Think of a language model (like ChatGPT) trying to guess the next word. Loss is a number that tells you how wrong the model is, on average.
+Higher = the model guesses badly
+Lower = the model guesses better
+You can think of it as: How surprised the model is by the correct answer. If loss is lower, the model is less surprised → it understands text better.
+
+# Nats
+nats" is just a unit.
+Like inches vs centimeters, but for measuring “surprise”
+Lower nats = better model.
+Small improvement needs huge data So if your model needed: 100 billion tokens to reach 3.4 → it needs 1 trillion tokens to reach 2.8.
+Why? Because language is extremely complex, and each bit of improvement gets harder.
+
+# Hyperparameters
+These are settings that you choose, before training starts.
+control how the model learns, but they are not learned by the model whereas parameters(weights) are learned by models
+Example: Learning rate , Batch size(How many examples the model sees at once.), Number of layers(how deep model is) , Training epochs(
+How many times you go through the dataset.)
+
+
+“The performance of a model depends heavily on the values of its hyperparameters.”
+“When working with small models, it’s a common practice to train a model multiple times with different sets of hyperparameters and pick the best-performing one. This is, however, rarely possible for large models as training them once is resource-draining enough.”
+
+# Scaliing Extrapolation / Hyperparameter transferring
+“ scaling extrapolation (also called hyperparameter transferring) has emerged as a research subfield that tries to predict, for large models, what hyperparameters will give the best performance. ”
+
+# Current Approach
+“study the impact of hyperparameters on models of different sizes, usually much smaller than the target model size, and then extrapolate how these hyperparameters would work on the target model size.18 A 2022 paper by Microsoft and OpenAI shows that it was possible to transfer hyperparameters from a 40M model to a 6.7B model.”
+“To learn more about scaling extrapolation, check out this excellent blog post: “On the Difficulty of Extrapolation with NN Scaling” (Luke Metz, 2022).”
+
+# Scaling Bottlenecks
+“ every order of magnitude increase in model size has led to an increase in model performance. ”
+“ every order of magnitude increase in model size has led to an increase in model performance. GPT-2 has an order of magnitude more parameters than GPT-1 (1.5 billion versus 117 million). GPT-3 has two orders of magnitude more than GPT-2 (175 billion versus 1.5 billion).”
+
+# “How many more orders of magnitude can model sizes grow?” some concerns
+Foundational models use so much data that we will run out of data eventually in few years 
+“The rate of training dataset size growth is much faster than the rate of new data being generated (Villalobos et al., 2022)”
+Example image20.png
+“If you’ve ever put anything on the internet, you should assume that it already is or will be included in the training data for some language models, whether you consent or not. This is similar to how, if you post something on the internet, you should expect it to be indexed by Google.”
+
+# Note 
+“An open research question is how to make a model forget specific information it has learned during training. Imagine you published a blog post that you eventually deleted. If that blog post was included in a model’s training data, the model might still reproduce the post’s content. As a result, people could potentially access removed content without your consent.”
+“Some researchers worry that recursively training new AI models on AI-generated data causes the new models to gradually forget the original data patterns, degrading their performance over time”
+“Once the publicly available data is exhausted, the most feasible paths for more human-generated training data is proprietary data. Unique proprietary data—copyrighted books, translations, contracts, medical records, genome sequences, and so forth—will be a competitive advantage in the AI race. This is a reason why OpenAI negotiated deals with publishers and media outlets including Axel Springer and the Associated Press.”
+“ Longpre et al. (2024) observed that between 2023 and 2024, the rapid crescendo of data restrictions from web sources rendered over 28% of the most critical sources in the popular public dataset C4 fully restricted from use. Due to changes in its Terms of Service and crawling restrictions, a full 45% of C4 is now restricted.”
+
+# Post-Training? Why
+1. “self-supervision optimizes the model for text completion, not conversations.”
+2. “if the model is pre-trained on data indiscriminately scraped from the internet, its outputs can be racist, sexist, rude, or just wrong. ”
+“Some people compare pre-training to reading to acquire knowledge, while post-training is like learning how to use that knowledge.”
+“post-training consumes a small portion of resources compared to pre-training (InstructGPT used only 2% of compute for post-training and 98% for pre-training),”
+
+Two Steps
+1. Supervised finetuning (SFT): “optimize models for conversations instead of completion.
+2. Preference finetuning: “Further finetune the model to output responses that align with human preference. with techniques like reinforcement learning (RL) from human feedback(used by gpt and llama)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1007,9 +1007,54 @@ Example image20.png
 “Some people compare pre-training to reading to acquire knowledge, while post-training is like learning how to use that knowledge.”
 “post-training consumes a small portion of resources compared to pre-training (InstructGPT used only 2% of compute for post-training and 98% for pre-training),”
 
+self supervised pre-training results in “ rogue model that can be considered an untamed monster because it uses indiscriminate data from the internet.”
+“This monster is then supervised finetuned on higher-quality data—Stack Overflow, Quora, or human annotations—which makes it more socially acceptable.”
+“This finetuned model is further polished using preference finetuning to make it customer-appropriate, which is like giving it a smiley face.”
+example- image21.png
+
+
 Two Steps
 1. Supervised finetuning (SFT): “optimize models for conversations instead of completion.
 2. Preference finetuning: “Further finetune the model to output responses that align with human preference. with techniques like reinforcement learning (RL) from human feedback(used by gpt and llama)
+
+
+# Supervised Finetuning
+Model only tries to complete the sentence, at this point no idea that it is supposed to be a conversation
+# Behviour cloning
+“To encourage a model to generate the appropriate responses”
+“show examples of appropriate responses. Such examples follow the format (prompt, response) and are called demonstration data.”
+example-image22.png , “Companies, therefore, often use highly educated labelers to generate demonstration data.”
+“If labeling objects in an image might take only seconds, generating one (prompt, response) pair can take up to 30 minutes, especially for tasks that involve long contexts like summarization. If it costs $10 for one (prompt, response) pair, the 13,000 pairs that OpenAI used for InstructGPT would cost $130,000. That doesn’t yet include the cost of designing the data ”
+Deepmind uses simple heuristics to create data for their model gopher
+“To reduce their dependence on high-quality human annotated data, many teams are turning to AI-generated data.”
+
+# Preference Finetuning
+“ Demonstration data teaches the model to have a conversation but doesn’t teach the model what kind of conversations it should have. For example, if a user asks the model to write an essay about why one race is inferior or how to hijack a plane, should the model comply?”
+“The goal of preference finetuning is to get AI models to behave according to human preference.”
+“the successful preference finetuning algorithm, which is still popular today, is RLHF. RLHF consists of two parts:”
+“Train a reward model that scores the foundation model’s outputs.
+Optimize the foundation model to generate responses for which the reward model will give maximal scores.”
+
+“Given a pair of (prompt, response), the reward model outputs a score for how good the response is. Training a model to score a given input is a common ML task.”
+
+
+# Other new approaches
+“ newer approaches like DPO (Rafailov et al., 2023) are gaining traction. For example, Meta switched from RLHF for Llama 2 to DPO for Llama 3 to reduce complexity. ”
+example- image 23.png
+“Llama-2 author Thomas Scialom shared that each comparison cost them $3.50. This is still much cheaper than writing responses, which cost $25 each.”
+chat-gpt labeler data ui example -> image24.png
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
